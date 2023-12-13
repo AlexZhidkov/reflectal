@@ -94,6 +94,23 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "version": 2
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "reflectal:build:production",
+              "serveTarget": "reflectal:serve:production"
+            },
+            "development": {
+              "buildTarget": "reflectal:build:development",
+              "serveTarget": "reflectal:serve:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }

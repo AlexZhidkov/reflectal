@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "reflectalplatform"
+  },
+  "targets": {
+    "reflectalplatform": {
+      "hosting": {
+        "reflectal": [
+          "reflectal"
+        ]
+      }
+    }
   }
 }
