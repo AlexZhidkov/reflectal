@@ -71,6 +71,7 @@ export class TeamComponent {
 
     collectionData(collection(this.firestore, 'teams', this.teamId, 'checkups'), { idField: 'id' })
       .pipe().subscribe((checkups) => {
+        this.checkups = [];
         checkups.forEach((checkup) => {
           this.checkups.push({
             id: checkup.id,

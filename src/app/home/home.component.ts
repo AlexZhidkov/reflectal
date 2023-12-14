@@ -37,10 +37,12 @@ export class HomeComponent {
   ) {
 
     onAuthStateChanged(this.auth, (user) => {
-      if (user) {
-        this.user = user;
+      if (!user) {
+        this.isLoading = false;
+        return;
       }
-      this.teamsCollection = collection(this.firestore, 'teams');
+      this.user = user;
+      this.teamsCollection = collection(this.firestore, 'users', user?.uid, 'teams');
       collectionData(this.teamsCollection, { idField: 'id' }).subscribe((teams) => {
         this.teams = teams;
         this.isLoading = false;
