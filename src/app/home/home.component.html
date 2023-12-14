@@ -5,4 +5,23 @@
             Dashboard
         </mat-card-title>
     </mat-card-header>
+    <mat-card-actions align="end">
+        <button mat-raised-button color="accent" (click)="createNewTeam()" data-cy="createNewTeamBtn">
+            <mat-icon inline=true>add_circle</mat-icon>
+            Create New Team
+        </button>
+    </mat-card-actions>
 </mat-card>
+
+<mat-nav-list>
+    <a mat-list-item [routerLink]="['/team/'+team.id]" *ngFor="let team of teams">
+        <img matListItemAvatar [src]="team.icon" referrerpolicy="no-referrer" [alt]="team.title">
+        <h3 matListItemTitle>
+            {{team.title ? team.title : "New Team"}}
+        </h3>
+        <p matListItemLine>
+            {{today | date:'fullDate'}}
+        </p>
+        <p>{{team.icon}}</p>
+    </a>
+</mat-nav-list>
