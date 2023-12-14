@@ -11,17 +11,22 @@
             Create New Team
         </button>
     </mat-card-actions>
-</mat-card>
+    <mat-card-header>
+        <mat-card-title>
+            My Teams
+        </mat-card-title>
+    </mat-card-header>
 
-<mat-nav-list>
-    <a mat-list-item [routerLink]="['/team/'+team.id]" *ngFor="let team of teams">
-        <img matListItemAvatar [src]="team.icon" referrerpolicy="no-referrer" [alt]="team.title">
-        <h3 matListItemTitle>
-            {{team.title ? team.title : "New Team"}}
-        </h3>
-        <p matListItemLine>
-            {{today | date:'fullDate'}}
-        </p>
-        <p>{{team.icon}}</p>
-    </a>
-</mat-nav-list>
+    <mat-nav-list>
+        <a mat-list-item [routerLink]="['/team/'+team.id]" *ngFor="let team of teams">
+            <img matListItemAvatar [src]="team.icon" referrerpolicy="no-referrer" [alt]="team.title">
+            <h3 matListItemTitle>
+                {{team.title ? team.title : "New Team"}}
+            </h3>
+            <p matListItemLine>
+                {{today | date:'fullDate'}}
+            </p>
+            <p>{{team.icon}}</p>
+        </a>
+    </mat-nav-list>
+</mat-card>

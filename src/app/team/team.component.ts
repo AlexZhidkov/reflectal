@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Analytics } from '@angular/fire/analytics';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Firestore, doc, onSnapshot, updateDoc, DocumentReference, DocumentData, writeBatch } from '@angular/fire/firestore';
+import { Firestore, doc, onSnapshot, updateDoc, DocumentReference, DocumentData, writeBatch, addDoc, collection, collectionData } from '@angular/fire/firestore';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,9 +34,11 @@ export class TeamComponent {
   isLoading = true;
   teamId: string;
   user: AppUser | null = null;
+  checkups: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private snackBar: MatSnackBar,
   ) {
     const teamId = this.route.snapshot.paramMap.get('teamId');
@@ -52,20 +54,31 @@ export class TeamComponent {
       }
       this.user = Object.assign(user);
     });
-    onSnapshot(this.teamRef, async (eventSnapshot) => {
-      if (!eventSnapshot.exists()) {
+    onSnapshot(this.teamRef, async (teamSnapshot) => {
+      if (!teamSnapshot.exists()) {
         console.error('Team does not exist');
         this.snackBar.open(`Team was deleted`, 'OK', {
           duration: 5000
         });
       }
-      this.team = eventSnapshot.data() as Team;
-      this.team.id = eventSnapshot.id;
+      this.team = teamSnapshot.data() as Team;
+      this.team.id = teamSnapshot.id;
       if (this.team.title) {
         this.teamTitle = this.team.title;
       }
       this.isLoading = false;
     });
+
+    collectionData(collection(this.firestore, 'teams', this.teamId, 'checkups'), { idField: 'id' })
+      .pipe().subscribe((checkups) => {
+        checkups.forEach((checkup) => {
+          this.checkups.push({
+            id: checkup.id,
+            icon: checkup['icon'],
+            time: checkup['time'].toDate()
+          });
+        });
+      });
   }
 
   updateTeamTitle(eventTitle: string) {
@@ -78,6 +91,15 @@ export class TeamComponent {
   updateTeam(data: any) {
     updateDoc(this.teamRef as DocumentReference<DocumentData>, data)
   }
-
+  createNewCheckup() {
+    this.isLoading = true;
+    addDoc(collection(this.firestore, 'teams', this.teamId, 'checkups'), {
+      icon: 'https://material.angular.io/assets/img/examples/shiba1.jpg',
+      time: new Date()
+    })
+      .then((docRef) => {
+        this.router.navigate([`checkup/${docRef.id}`]);
+      });
+  }
 }
 

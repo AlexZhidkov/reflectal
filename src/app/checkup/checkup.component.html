@@ -1,0 +1,26 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>
+            How are you feeling today?
+        </mat-card-title>
+        <mat-card-subtitle>
+            Wellbeing Checkup
+        </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-button-toggle-group [ngModel]="sentiment" aria-label="sentiment" (ngModelChange)="ChangeSentiment($event)">
+            <mat-button-toggle value="1">
+                <mat-icon>sentiment_very_dissatisfied</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle value="2">
+                <mat-icon>sentiment_dissatisfied</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle value="3">
+                <mat-icon>sentiment_satisfied</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle value="4">
+                <mat-icon>sentiment_very_satisfied</mat-icon>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </mat-card-content>
+</mat-card>
