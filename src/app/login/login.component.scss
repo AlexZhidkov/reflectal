@@ -1,0 +1,25 @@
+.login-button {
+    height: 50px;
+    margin: 8px 0;
+    width: 100%;
+}
+
+.section-label {
+    margin-top: 8px;
+}
+
+.center-div {
+    margin: 0 auto;
+    max-width: 500px;
+}
+
+.center-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+mat-form-field {
+    width: 100%;
+}
