@@ -57,7 +57,7 @@ export class HomeComponent {
       this.router.navigate([`login`]);
       return;
     }
-    const teamId = doc(collection(this.firestore, 'teams')).id;
+    const teamId = doc(collection(this.firestore, 'orgs', 'DEMO', 'teams')).id;
     logEvent(this.analytics, 'new_team', { uid: this.user.uid, teamId: teamId })
     const batch = writeBatch(this.firestore);
     const newTeam: Team = {
@@ -68,7 +68,7 @@ export class HomeComponent {
       description: '',
     }
 
-    batch.set(doc(collection(this.firestore, 'teams'), teamId), newTeam);
+    batch.set(doc(collection(this.firestore, 'orgs', 'DEMO', 'teams'), teamId), newTeam);
     batch.set(doc(collection(this.firestore, 'users', this.user.uid, 'teams'), teamId), {
       dateTime: newTeam.dateTime,
       icon: this.user.photoURL,

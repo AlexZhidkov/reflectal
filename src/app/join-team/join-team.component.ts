@@ -37,7 +37,7 @@ export class JoinTeamComponent {
       throw new Error("Team ID is falsy");
     }
     this.teamId = teamId;
-    this.teamRef = doc(this.firestore, 'teams', this.teamId as string);
+    this.teamRef = doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId as string);
     onAuthStateChanged(this.auth, async (user) => {
       if (!user) {
         console.error('User object is falsy');
@@ -62,7 +62,7 @@ export class JoinTeamComponent {
     if (!this.team) throw new Error('Team object is falsy');
 
     const batch = writeBatch(this.firestore);
-    batch.set(doc(this.firestore, 'teams', this.teamId, 'members', this.user.uid), {
+    batch.set(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'members', this.user.uid), {
       displayName: this.user.displayName,
       photoURL: this.user.photoURL
     });

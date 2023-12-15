@@ -49,7 +49,7 @@ export class TeamComponent {
       throw new Error("Team ID is falsy");
     }
     this.teamId = teamId;
-    this.teamRef = doc(this.firestore, 'teams', this.teamId as string);
+    this.teamRef = doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId as string);
     onAuthStateChanged(this.auth, async (user) => {
       if (!user) {
         console.error('User object is falsy');
@@ -63,6 +63,7 @@ export class TeamComponent {
         this.snackBar.open(`Team was deleted`, 'OK', {
           duration: 5000
         });
+        this.router.navigate([`/`]);
       }
       this.team = teamSnapshot.data() as Team;
       this.team.id = teamSnapshot.id;
@@ -72,7 +73,7 @@ export class TeamComponent {
       this.isLoading = false;
     });
 
-    collectionData(collection(this.firestore, 'teams', this.teamId, 'members'), { idField: 'id' })
+    collectionData(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'members'), { idField: 'id' })
       .pipe().subscribe((members) => {
         this.members = [];
         members.forEach((member) => {
@@ -84,7 +85,7 @@ export class TeamComponent {
         });
       });
 
-    collectionData(collection(this.firestore, 'teams', this.teamId, 'checkups'), { idField: 'id' })
+    collectionData(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'checkups'), { idField: 'id' })
       .pipe().subscribe((checkups) => {
         this.checkups = [];
         checkups.forEach((checkup) => {
@@ -123,7 +124,7 @@ export class TeamComponent {
 
   createNewCheckup() {
     this.isLoading = true;
-    addDoc(collection(this.firestore, 'teams', this.teamId, 'checkups'), {
+    addDoc(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'checkups'), {
       icon: 'https://material.angular.io/assets/img/examples/shiba1.jpg',
       time: new Date()
     })

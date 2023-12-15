@@ -45,9 +45,9 @@ export class CheckupComponent {
       sentiment: this.sentiment,
     };
     if (this.responseId) {
-      updateDoc(doc(this.firestore, 'teams', this.teamId, 'checkups', this.checkupId, 'responses', this.responseId), response)
+      updateDoc(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'checkups', this.checkupId, 'responses', this.responseId), response)
     } else {
-      addDoc(collection(this.firestore, 'teams', this.teamId, 'checkups', this.checkupId, 'responses'), response)
+      addDoc(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'checkups', this.checkupId, 'responses'), response)
         .then((responseRef) => {
           this.responseId = responseRef.id;
         });
