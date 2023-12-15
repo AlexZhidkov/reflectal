@@ -9,11 +9,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-presentation',
   standalone: true,
-  imports: [RouterModule, FormsModule, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatCardModule, MatSnackBarModule],
+  imports: [RouterModule, FormsModule, QRCodeModule, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatCardModule, MatSnackBarModule],
 
   templateUrl: './presentation.component.html',
   styleUrl: './presentation.component.scss'
@@ -22,6 +23,7 @@ export class PresentationComponent {
   private firestore: Firestore = inject(Firestore);
   teamId: string;
   presentationId: string;
+  presentationUrl: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,13 +35,14 @@ export class PresentationComponent {
     const presentationId = this.route.snapshot.paramMap.get('presentationId');
     if (!presentationId) throw new Error("Presentation ID is falsy");
     this.presentationId = presentationId;
+    this.presentationUrl = `${window.location.origin}/checkup/${this.presentationId}`;
   }
 
   share() {
     if (navigator.share) {
       navigator.share({
         text: `Please complete reflectal checkup`,
-        url: `${window.location.origin}/checkup/${this.presentationId}`
+        url: this.presentationUrl
       })
     }
   }
