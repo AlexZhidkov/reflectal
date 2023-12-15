@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Analytics } from '@angular/fire/analytics';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Firestore, doc, onSnapshot, updateDoc, DocumentReference, DocumentData, writeBatch, addDoc, collection, collectionData } from '@angular/fire/firestore';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,11 +35,13 @@ export class TeamComponent {
   isLoading = true;
   teamId: string;
   user: AppUser | null = null;
+  members: any[] = [];
   checkups: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private clipboard: Clipboard,
     private snackBar: MatSnackBar,
   ) {
     const teamId = this.route.snapshot.paramMap.get('teamId');
@@ -69,6 +72,18 @@ export class TeamComponent {
       this.isLoading = false;
     });
 
+    collectionData(collection(this.firestore, 'teams', this.teamId, 'members'), { idField: 'id' })
+      .pipe().subscribe((members) => {
+        this.members = [];
+        members.forEach((member) => {
+          this.members.push({
+            id: member.id,
+            photoUrl: member['photoUrl'],
+            displayName: member['displayName'],
+          });
+        });
+      });
+
     collectionData(collection(this.firestore, 'teams', this.teamId, 'checkups'), { idField: 'id' })
       .pipe().subscribe((checkups) => {
         this.checkups = [];
@@ -82,16 +97,30 @@ export class TeamComponent {
       });
   }
 
-  updateTeamTitle(eventTitle: string) {
+  updateTeamTitle(teamTitle: string) {
     const batch = writeBatch(this.firestore);
-    batch.update(this.teamRef as DocumentReference<DocumentData>, { title: eventTitle });
-    batch.update(doc(this.firestore, 'users', this.user?.uid as string, 'teams', this.teamId as string), { title: eventTitle });
+    batch.update(this.teamRef as DocumentReference<DocumentData>, { title: teamTitle });
+    batch.update(doc(this.firestore, 'users', this.user?.uid as string, 'teams', this.teamId as string), { title: teamTitle });
     batch.commit();
   }
 
   updateTeam(data: any) {
     updateDoc(this.teamRef as DocumentReference<DocumentData>, data)
   }
+
+  inviteNewMember() {
+    var inviteUrl = `${window.location.origin}/invite/${this.teamId}`;
+    const invite = `Join ${this.team?.title} on reflectal`;
+    this.clipboard.copy(`${invite}\n${inviteUrl}`);
+
+    if (navigator.share) {
+      navigator.share({
+        text: invite,
+        url: inviteUrl
+      })
+    }
+  }
+
   createNewCheckup() {
     this.isLoading = true;
     addDoc(collection(this.firestore, 'teams', this.teamId, 'checkups'), {

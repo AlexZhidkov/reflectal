@@ -1,0 +1,17 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>
+            {{team?.title}}
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <p>You are invited to join {{team?.title}}.</p>
+        <p>{{team?.description}}</p>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button color="accent" (click)="joinTeam()">
+            <mat-icon inline=true>check</mat-icon>
+            Join Team
+        </button>
+    </mat-card-actions>
+</mat-card>
