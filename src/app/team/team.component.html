@@ -42,24 +42,25 @@
 </mat-card>
 <mat-card>
     <mat-card-actions align="end">
-        <button mat-raised-button color="accent" (click)="createNewCheckup()">
+        <button mat-raised-button color="accent" (click)="createNewPresentation()">
             <mat-icon inline=true>add_circle</mat-icon>
-            Create New Checkup
+            Create New Presentation
         </button>
     </mat-card-actions>
     <mat-card-header>
         <mat-card-title>
-            Checkups
+            Presentations
         </mat-card-title>
     </mat-card-header>
     <mat-nav-list>
-        <a mat-list-item [routerLink]="['/checkup', teamId, checkup.id]" *ngFor="let checkup of checkups">
-            <img matListItemAvatar [src]="checkup.icon" referrerpolicy="no-referrer" alt="checkup">
+        <a mat-list-item [routerLink]="presentation.completed ? [] : ['/presentation', teamId, presentation.id]"
+            *ngFor="let presentation of presentations">
+            <mat-icon matListItemAvatar>{{presentation.completed ? 'done' : 'play_circle'}}</mat-icon>
             <h3 matListItemTitle>
-                {{checkup.time | date:'fullDate'}}
+                {{presentation.created | date:'fullDate'}}
             </h3>
             <p matListItemLine>
-                {{checkup.time | date:'shortTime'}}
+                {{presentation.created | date:'shortTime'}}
             </p>
         </a>
     </mat-nav-list>

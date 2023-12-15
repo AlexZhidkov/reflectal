@@ -36,7 +36,7 @@ export class TeamComponent {
   teamId: string;
   user: AppUser | null = null;
   members: any[] = [];
-  checkups: any[] = [];
+  presentations: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -85,14 +85,14 @@ export class TeamComponent {
         });
       });
 
-    collectionData(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'checkups'), { idField: 'id' })
-      .pipe().subscribe((checkups) => {
-        this.checkups = [];
-        checkups.forEach((checkup) => {
-          this.checkups.push({
-            id: checkup.id,
-            icon: checkup['icon'],
-            time: checkup['time'].toDate()
+    collectionData(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations'), { idField: 'id' })
+      .pipe().subscribe((presentations) => {
+        this.presentations = [];
+        presentations.forEach((presentation) => {
+          this.presentations.push({
+            id: presentation.id,
+            created: presentation['created'].toDate(),
+            completed: presentation['completed']?.toDate()
           });
         });
       });
@@ -122,14 +122,25 @@ export class TeamComponent {
     }
   }
 
-  createNewCheckup() {
+  createNewPresentation() {
+    if (!this.user) throw new Error("User is falsy");
+    if (!this.teamId) throw new Error("Team ID is falsy");
     this.isLoading = true;
-    addDoc(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'checkups'), {
-      icon: 'https://material.angular.io/assets/img/examples/shiba1.jpg',
-      time: new Date()
-    })
-      .then((docRef) => {
-        this.router.navigate([`checkup/${docRef.id}`]);
+    const created = new Date();
+    const presentationId = doc(collection(this.firestore, 'orgs')).id;
+
+    const batch = writeBatch(this.firestore);
+    batch.set(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', presentationId), {
+      created: created
+    });
+    batch.set(doc(this.firestore, 'presentations-in-progress', presentationId), {
+      orgId: 'DEMO',
+      teamId: this.teamId,
+      created: created
+    });
+    batch.commit()
+      .then(() => {
+        this.router.navigate(['presentation', this.teamId, presentationId]);
       });
   }
 }

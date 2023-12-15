@@ -1,0 +1,22 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>
+            Presentation
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <img style="max-width: 500px;"
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png"
+            alt="QR Code">
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button (click)="share()">
+            <mat-icon inline=true>share</mat-icon>
+            Share
+        </button>
+        <button mat-raised-button (click)="finish()">
+            <mat-icon inline=true>done</mat-icon>
+            Finish
+        </button>
+    </mat-card-actions>
+</mat-card>

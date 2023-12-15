@@ -19,25 +19,18 @@ import { Firestore, addDoc, collection, doc, updateDoc } from '@angular/fire/fir
 })
 export class CheckupComponent {
   private firestore: Firestore = inject(Firestore);
-  teamId: string;
-  checkupId: string;
+  presentationId: string;
   responseId: string | undefined;
   sentiment: number | undefined;
 
   constructor(
     private route: ActivatedRoute,
   ) {
-    const teamId = this.route.snapshot.paramMap.get('teamId');
-    if (!teamId) {
-      throw new Error("Team ID is falsy");
-    }
-    this.teamId = teamId;
-    const checkupId = this.route.snapshot.paramMap.get('checkupId');
-    if (!checkupId) {
-      throw new Error("Checkup ID is falsy");
-    }
-    this.checkupId = checkupId;
+    const presentationId = this.route.snapshot.paramMap.get('presentationId');
+    if (!presentationId) throw new Error("Presentation ID is falsy");
+    this.presentationId = presentationId;
   }
+
   ChangeSentiment(sentiment: string) {
     this.sentiment = parseInt(sentiment);
     const response = {
@@ -45,9 +38,9 @@ export class CheckupComponent {
       sentiment: this.sentiment,
     };
     if (this.responseId) {
-      updateDoc(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'checkups', this.checkupId, 'responses', this.responseId), response)
+      updateDoc(doc(this.firestore, 'presentations-in-progress', this.presentationId, 'responses', this.responseId), response)
     } else {
-      addDoc(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'checkups', this.checkupId, 'responses'), response)
+      addDoc(collection(this.firestore, 'presentations-in-progress', this.presentationId, 'responses'), response)
         .then((responseRef) => {
           this.responseId = responseRef.id;
         });
