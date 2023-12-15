@@ -53,14 +53,23 @@
         </mat-card-title>
     </mat-card-header>
     <mat-nav-list>
-        <a mat-list-item [routerLink]="presentation.completed ? [] : ['/presentation', teamId, presentation.id]"
-            *ngFor="let presentation of presentations">
-            <mat-icon matListItemAvatar>{{presentation.completed ? 'done' : 'play_circle'}}</mat-icon>
+        <a mat-list-item [routerLink]="['/presentation', teamId, presentation.id]"
+            *ngFor="let presentation of presentationsInProgress">
+            <mat-icon matListItemAvatar>play_circle</mat-icon>
             <h3 matListItemTitle>
                 {{presentation.created | date:'fullDate'}}
             </h3>
             <p matListItemLine>
                 {{presentation.created | date:'shortTime'}}
+            </p>
+        </a>
+        <a mat-list-item *ngFor="let presentation of presentationsCompleted">
+            <mat-icon matListItemAvatar>done</mat-icon>
+            <h3 matListItemTitle>
+                {{presentation.percentage}}%
+            </h3>
+            <p matListItemLine>
+                {{presentation.created | date:'fullDate'}} {{presentation.created | date:'shortTime'}}
             </p>
         </a>
     </mat-nav-list>

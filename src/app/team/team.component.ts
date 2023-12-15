@@ -36,7 +36,8 @@ export class TeamComponent {
   teamId: string;
   user: AppUser | null = null;
   members: any[] = [];
-  presentations: any[] = [];
+  presentationsCompleted: any[] = [];
+  presentationsInProgress: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -87,13 +88,24 @@ export class TeamComponent {
 
     collectionData(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations'), { idField: 'id' })
       .pipe().subscribe((presentations) => {
-        this.presentations = [];
+        this.presentationsCompleted = [];
+        this.presentationsInProgress = [];
         presentations.forEach((presentation) => {
-          this.presentations.push({
-            id: presentation.id,
-            created: presentation['created'].toDate(),
-            completed: presentation['completed']?.toDate()
-          });
+          if (presentation['completed']) {
+            const scores = presentation['checkups'];
+            const percentage = (scores.reduce((a: number, b: number) => a - 1 + b - 1, 0) / (3 * scores.length)) * 100;
+            this.presentationsCompleted.push({
+              id: presentation.id,
+              created: presentation['created'].toDate(),
+              completed: presentation['completed'].toDate(),
+              percentage: Math.round(percentage),
+            });
+          } else {
+            this.presentationsInProgress.push({
+              id: presentation.id,
+              created: presentation['created'].toDate(),
+            });
+          }
         });
       });
   }
