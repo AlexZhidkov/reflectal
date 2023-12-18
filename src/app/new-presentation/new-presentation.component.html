@@ -1,0 +1,22 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>
+            Presentation
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <p>Created: {{presentation.created | date:'medium'}}</p>
+        <p>Responses: {{numberOfCompletedResponses}}/{{numberOfResponses}}</p>
+        <qrcode [qrdata]="presentationUrl" [width]="500" [errorCorrectionLevel]="'M'"></qrcode>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-raised-button (click)="share()">
+            <mat-icon inline=true>share</mat-icon>
+            Share
+        </button>
+        <button mat-raised-button (click)="finish()">
+            <mat-icon inline=true>done</mat-icon>
+            Finish
+        </button>
+    </mat-card-actions>
+</mat-card>

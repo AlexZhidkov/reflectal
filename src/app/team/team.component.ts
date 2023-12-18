@@ -36,7 +36,7 @@ export class TeamComponent {
   teamId: string;
   user: AppUser | null = null;
   members: any[] = [];
-  presentationsCompleted: any[] = [];
+  presentationsFinished: any[] = [];
   presentationsInProgress: any[] = [];
 
   constructor(
@@ -88,16 +88,16 @@ export class TeamComponent {
 
     collectionData(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations'), { idField: 'id' })
       .pipe().subscribe((presentations) => {
-        this.presentationsCompleted = [];
+        this.presentationsFinished = [];
         this.presentationsInProgress = [];
         presentations.forEach((presentation) => {
-          if (presentation['completed']) {
-            const scores = presentation['checkups'];
+          if (presentation['finished']) {
+            const scores = presentation['wellbeing'];
             const percentage = (scores.reduce((a: number, b: number) => a - 1 + b - 1, 0) / (3 * scores.length)) * 100;
-            this.presentationsCompleted.push({
+            this.presentationsFinished.push({
               id: presentation.id,
               created: presentation['created'].toDate(),
-              completed: presentation['completed'].toDate(),
+              finished: presentation['finished'].toDate(),
               percentage: Math.round(percentage),
             });
           } else {
@@ -142,17 +142,21 @@ export class TeamComponent {
     const presentationId = doc(collection(this.firestore, 'orgs')).id;
 
     const batch = writeBatch(this.firestore);
-    batch.set(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', presentationId), {
-      created: created
-    });
+    const newPresentation = {
+      created: created,
+      q1: 'It is easy to eat healthy and exercise on days I work',
+      q2: 'I am confident in my career growth and progress',
+      q3: 'I am happy in the leadership and direction',
+    };
+    batch.set(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', presentationId), newPresentation);
     batch.set(doc(this.firestore, 'presentations-in-progress', presentationId), {
       orgId: 'DEMO',
       teamId: this.teamId,
       created: created,
       questions: [
-        'It is easy to eat healthy and exercise on days I work',
-        'I am confident in my career growth and progress',
-        'I am happy in the leadership and direction'
+        newPresentation.q1,
+        newPresentation.q2,
+        newPresentation.q3,
       ]
     });
     batch.commit()

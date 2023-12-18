@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Firestore, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, updateDoc } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,18 +9,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { QRCodeModule } from 'angularx-qrcode';
 import { Presentation, Response } from '../models/presentation';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-presentation',
+  selector: 'app-new-presentation',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatCardModule, MatSnackBarModule],
-
-  templateUrl: './presentation.component.html',
-  styleUrl: './presentation.component.scss'
+  imports: [CommonModule, RouterModule, FormsModule, QRCodeModule, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatCardModule, MatSnackBarModule],
+  templateUrl: './new-presentation.component.html',
+  styleUrl: './new-presentation.component.scss'
 })
-export class PresentationComponent {
+export class NewPresentationComponent {
   private firestore: Firestore = inject(Firestore);
   teamId: string;
   presentationId: string;
@@ -45,14 +45,12 @@ export class PresentationComponent {
         if (presentation.exists()) {
           this.presentation = presentation.data() as Presentation;
           this.presentation.created = presentation.data()['created'].toDate();
-          this.presentation.finished = presentation.data()['finished'].toDate();
         }
       })
-    getDocs(collection(this.firestore, 'presentations-in-progress', this.presentationId, 'responses'))
-      .then((responses) => {
-        this.numberOfResponses = responses.docs.length;
-        this.numberOfCompletedResponses = responses.docs.filter((response) => { return (response.data() as Response).completed }).length;
-      });
+    onSnapshot(collection(this.firestore, 'presentations-in-progress', this.presentationId, 'responses'), (responses) => {
+      this.numberOfResponses = responses.docs.length;
+      this.numberOfCompletedResponses = responses.docs.filter((response) => { return (response.data() as Response).completed }).length;
+    });
   }
 
   share() {
@@ -67,11 +65,14 @@ export class PresentationComponent {
   finish() {
     getDocs(collection(this.firestore, 'presentations-in-progress', this.presentationId, 'responses'))
       .then((responses) => {
-        const checkups = responses.docs.map((response) => { return response.data()['sentiment'] });
+        const checkups = responses.docs.map((response) => { return response.data()['wellbeing'] });
         updateDoc(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', this.presentationId),
           {
-            checkups: checkups,
-            completed: new Date(),
+            wellbeing: responses.docs.map((response) => { return response.data()['wellbeing'] }),
+            q1: responses.docs.map((response) => { return response.data()['q1'] }),
+            q2: responses.docs.map((response) => { return response.data()['q2'] }),
+            q3: responses.docs.map((response) => { return response.data()['q3'] }),
+            finished: new Date(),
           })
           .then(() => {
             deleteDoc(doc(this.firestore, 'presentations-in-progress', this.presentationId)).then(() => {

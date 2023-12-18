@@ -11,18 +11,23 @@
         <mat-button-toggle-group #toggle="matButtonToggleGroup" [(ngModel)]="sentiment" aria-label="sentiment">
             <mat-button-toggle value="1">
                 <mat-icon>sentiment_very_dissatisfied</mat-icon>
+                Never
             </mat-button-toggle>
             <mat-button-toggle value="2">
                 <mat-icon>sentiment_dissatisfied</mat-icon>
+                Rarely
             </mat-button-toggle>
             <mat-button-toggle value="3">
                 <mat-icon>sentiment_neutral</mat-icon>
-            </mat-button-toggle>
-            <mat-button-toggle value="3">
-                <mat-icon>sentiment_satisfied</mat-icon>
+                Sometimes
             </mat-button-toggle>
             <mat-button-toggle value="4">
+                <mat-icon>sentiment_satisfied</mat-icon>
+                Often
+            </mat-button-toggle>
+            <mat-button-toggle value="5">
                 <mat-icon>sentiment_very_satisfied</mat-icon>
+                Always
             </mat-button-toggle>
         </mat-button-toggle-group>
         <mat-card-actions>
