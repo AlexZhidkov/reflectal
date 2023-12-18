@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card *ngIf="questionNumber === 0">
     <mat-card-header>
         <mat-card-title>
             How are you feeling today?
@@ -22,5 +22,27 @@
                 <mat-icon>sentiment_very_satisfied</mat-icon>
             </mat-button-toggle>
         </mat-button-toggle-group>
+        <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="NextQuestion(sentiment)">Next Question</button>
+        </mat-card-actions>
+    </mat-card-content>
+</mat-card>
+
+<app-question *ngIf="questionNumber > 0 && questionNumber < 4" [question]="question"
+    (nextQuestion)="NextQuestion($event)"></app-question>
+
+<mat-card *ngIf="questionNumber >= 4">
+    <mat-card-header>
+        <mat-card-title>
+            Finished
+        </mat-card-title>
+        <mat-card-subtitle>
+            Thank you
+        </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="reloadPage()">Start Over</button>
+        </mat-card-actions>
     </mat-card-content>
 </mat-card>

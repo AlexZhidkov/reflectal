@@ -148,7 +148,12 @@ export class TeamComponent {
     batch.set(doc(this.firestore, 'presentations-in-progress', presentationId), {
       orgId: 'DEMO',
       teamId: this.teamId,
-      created: created
+      created: created,
+      questions: [
+        'It is easy to eat healthy and exercise on days I work',
+        'I am confident in my career growth and progress',
+        'I am happy in the leadership and direction'
+      ]
     });
     batch.commit()
       .then(() => {
