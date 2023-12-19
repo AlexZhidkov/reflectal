@@ -31,6 +31,12 @@ $reflectal-theme: mat.define-light-theme((color: (primary: $reflectal-primary,
 
 /* You can add global styles to this file, and also import other style files */
 
+:root {
+  --mat-card-title-text-size: 20px;
+  --mat-card-title-text-weight: 500;
+  --mat-card-title-text-line-height: 32px;
+}
+
 html,
 body {
   height: 100%;
