@@ -35,6 +35,10 @@ $reflectal-theme: mat.define-light-theme((color: (primary: $reflectal-primary,
   --mat-card-title-text-size: 20px;
   --mat-card-title-text-weight: 500;
   --mat-card-title-text-line-height: 32px;
+  --mat-toolbar-title-text-size: 20px;
+  --mat-toolbar-title-text-line-height: 32px;
+  --mat-toolbar-title-text-weight: 500;
+  --mat-toolbar-title-text-tracking: 0.125em;
 }
 
 html,

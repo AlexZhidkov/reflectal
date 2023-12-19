@@ -4,16 +4,18 @@
             Presentation
         </mat-card-title>
     </mat-card-header>
-    <mat-card-content>
+    <mat-card-content *ngIf="!isLoading">
         <p>Created: {{presentation.created | date:'medium'}}</p>
         <p>Completed: {{presentation.finished | date:'medium'}}</p>
+        <p>Wellbeing</p>
+        <canvas baseChart class="chart" [data]="wellbeingChartData" [type]="pieChartType"></canvas>
         <p>Controllable risk factors:</p>
         <p>1. {{presentation.question1}}</p>
+        <canvas baseChart class="chart" [data]="q1ChartData" [type]="pieChartType"></canvas>
         <p>2. {{presentation.question2}}</p>
+        <canvas baseChart class="chart" [data]="q2ChartData" [type]="pieChartType"></canvas>
         <p>3. {{presentation.question3}}</p>
-        <canvas *ngIf="!isLoading" style="max-height: 500px;" baseChart class="chart" [data]="doughnutChartData"
-            [type]="doughnutChartType">
-        </canvas>
+        <canvas baseChart class="chart" [data]="q3ChartData" [type]="pieChartType"></canvas>
     </mat-card-content>
 
 </mat-card>

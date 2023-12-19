@@ -30,23 +30,31 @@ export class PresentationComponent {
   presentation: PresentationResult = {} as PresentationResult;
   isLoading = true;
 
-  doughnutChartType: ChartType = 'doughnut';
-  doughnutChartLabels: string[] = [
+  pieChartType: ChartType = 'pie';
+  chartLabels: string[] = [
     'Always',
     'Often',
     'Sometimes',
     'Rarely',
     'Never',
   ];
-  doughnutChartData: ChartData<'doughnut'> = {
-    labels: this.doughnutChartLabels,
-    datasets: [
-      { data: [0, 0, 0, 0, 0] },
-      { data: [0, 0, 0, 0, 0] },
-      { data: [0, 0, 0, 0, 0] },
-    ],
-  };
 
+  public wellbeingChartData: ChartData<'pie', number[], string | string[]> = {
+    labels: [':))', ':)', ':(', ':(('],
+    datasets: [{ data: [0, 0, 0, 0], },]
+  };
+  public q1ChartData: ChartData<'pie', number[], string | string[]> = {
+    labels: this.chartLabels,
+    datasets: [{ data: [0, 0, 0, 0, 0], },]
+  };
+  public q2ChartData: ChartData<'pie', number[], string | string[]> = {
+    labels: this.chartLabels,
+    datasets: [{ data: [0, 0, 0, 0, 0], },]
+  };
+  public q3ChartData: ChartData<'pie', number[], string | string[]> = {
+    labels: this.chartLabels,
+    datasets: [{ data: [0, 0, 0, 0, 0], },]
+  };
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -64,24 +72,24 @@ export class PresentationComponent {
           this.presentation = presentation.data() as PresentationResult;
           this.presentation.created = presentation.data()['created'].toDate();
           this.presentation.finished = presentation.data()['finished'].toDate();
+          this.presentation.wellbeing.forEach((response: number) => {
+            this.wellbeingChartData.datasets[0].data[4 - response]++;
+          });
           var dataset1 = [0, 0, 0, 0, 0];
           this.presentation.responses1.forEach((response: number) => {
             dataset1[5 - response]++;
           });
+          this.q1ChartData.datasets[0].data = dataset1;
           const dataset2 = [0, 0, 0, 0, 0];
           this.presentation.responses2.forEach((response: number) => {
             dataset2[5 - response]++;
           });
+          this.q2ChartData.datasets[0].data = dataset2;
           const dataset3 = [0, 0, 0, 0, 0];
           this.presentation.responses3.forEach((response: number) => {
             dataset3[5 - response]++;
           });
-          this.doughnutChartData.datasets[0].label = this.presentation.question1;
-          this.doughnutChartData.datasets[0].data = dataset1;
-          this.doughnutChartData.datasets[1].label = this.presentation.question2;
-          this.doughnutChartData.datasets[1].data = dataset2;
-          this.doughnutChartData.datasets[2].label = this.presentation.question3;
-          this.doughnutChartData.datasets[2].data = dataset3;
+          this.q3ChartData.datasets[0].data = dataset3;
           this.isLoading = false;
         }
       })
