@@ -1,21 +1,36 @@
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>
-            Presentation
-        </mat-card-title>
-    </mat-card-header>
-    <mat-card-content *ngIf="!isLoading">
-        <p>Created: {{presentation.created | date:'medium'}}</p>
-        <p>Completed: {{presentation.finished | date:'medium'}}</p>
-        <p>Wellbeing</p>
-        <canvas baseChart class="chart" [data]="wellbeingChartData" [type]="pieChartType"></canvas>
-        <p>Controllable risk factors:</p>
-        <p>1. {{presentation.question1}}</p>
-        <canvas baseChart class="chart" [data]="q1ChartData" [type]="pieChartType"></canvas>
-        <p>2. {{presentation.question2}}</p>
-        <canvas baseChart class="chart" [data]="q2ChartData" [type]="pieChartType"></canvas>
-        <p>3. {{presentation.question3}}</p>
-        <canvas baseChart class="chart" [data]="q3ChartData" [type]="pieChartType"></canvas>
-    </mat-card-content>
-
-</mat-card>
+<div *ngIf="!isLoading">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>
+                Presentation
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content *ngIf="!isLoading">
+            <p>Created: {{presentation.created | date:'medium'}}</p>
+            <p>Completed: {{presentation.finished | date:'medium'}}</p>
+            <h3>Wellbeing</h3>
+            <canvas baseChart class="chart" [data]="wellbeingChartData" [type]="pieChartType"></canvas>
+            <h3>Controllable risk factors:</h3>
+        </mat-card-content>
+    </mat-card>
+    <div class="canvas-container">
+        <mat-card class="canvas-card">
+            <mat-card-content>
+                <p>1. {{presentation.question1}}</p>
+                <canvas baseChart class="chart" [data]="q1ChartData" [type]="pieChartType"></canvas>
+            </mat-card-content>
+        </mat-card>
+        <mat-card class="canvas-card">
+            <mat-card-content>
+                <p>2. {{presentation.question2}}</p>
+                <canvas baseChart class="chart" [data]="q2ChartData" [type]="pieChartType"></canvas>
+            </mat-card-content>
+        </mat-card>
+        <mat-card class="canvas-card">
+            <mat-card-content>
+                <p>3. {{presentation.question3}}</p>
+                <canvas baseChart class="chart" [data]="q3ChartData" [type]="pieChartType"></canvas>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

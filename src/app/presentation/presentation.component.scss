@@ -1,3 +1,19 @@
 canvas {
     max-height: 500px;
 }
+
+.canvas-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.canvas-card {
+    flex: 1;
+    margin: 10px;
+}
+
+@media (max-width: 600px) {
+    .canvas-container {
+        flex-direction: column;
+    }
+}
