@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Analytics } from '@angular/fire/analytics';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Firestore, doc, onSnapshot, updateDoc, DocumentReference, DocumentData, writeBatch, addDoc, collection, collectionData } from '@angular/fire/firestore';
+import { Firestore, doc, onSnapshot, updateDoc, DocumentReference, DocumentData, writeBatch, collection, collectionData, orderBy, query } from '@angular/fire/firestore';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -75,7 +75,8 @@ export class TeamComponent {
       this.isLoading = false;
     });
 
-    collectionData(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'members'), { idField: 'id' })
+    collectionData(query(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'members'),
+      orderBy('displayName', 'asc')), { idField: 'id' })
       .pipe().subscribe((members) => {
         this.members = [];
         members.forEach((member) => {
@@ -87,14 +88,15 @@ export class TeamComponent {
         });
       });
 
-    collectionData(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations'), { idField: 'id' })
+    collectionData(query(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations'),
+      orderBy('created', 'desc')), { idField: 'id' })
       .pipe().subscribe((presentations) => {
         this.presentationsFinished = [];
         this.presentationsInProgress = [];
         presentations.forEach((presentation) => {
           if (presentation['finished']) {
             const scores = presentation['wellbeing'];
-            const percentage = (scores.reduce((a: number, b: number) => a - 1 + b - 1, 0) / (3 * scores.length)) * 100;
+            const percentage = (scores.reduce((a: number, b: number) => a + b - 1, 0) / (3 * scores.length)) * 100;
             this.presentationsFinished.push({
               id: presentation.id,
               created: presentation['created'].toDate(),
