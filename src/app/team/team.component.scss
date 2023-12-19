@@ -1,0 +1,15 @@
+.card-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.card {
+    flex: 1;
+    margin: 10px;
+}
+
+@media (max-width: 600px) {
+    .card-container {
+        flex-direction: column;
+    }
+}

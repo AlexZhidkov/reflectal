@@ -16,11 +16,12 @@ import { MatInputModule } from '@angular/material/input';
 import { Team } from '../models/team';
 import { AppUser } from '../models/app-user';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { WellbeingChartComponent } from '../wellbeing-chart/wellbeing-chart.component';
 
 @Component({
   selector: 'app-team',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatCardModule, MatListModule, MatSnackBarModule],
+  imports: [CommonModule, RouterModule, WellbeingChartComponent, FormsModule, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatCardModule, MatListModule, MatSnackBarModule],
   templateUrl: './team.component.html',
   styleUrl: './team.component.scss'
 })

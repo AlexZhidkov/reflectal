@@ -17,61 +17,64 @@
             <textarea matInput name="teamDescription" [ngModel]="team?.description"
                 (ngModelChange)="updateTeam({description: $event})" data-cy="teamDescription"></textarea>
         </mat-form-field>
+        <app-wellbeing-chart [teamId]="teamId"></app-wellbeing-chart>
     </mat-card-content>
 </mat-card>
-<mat-card>
-    <mat-card-actions align="end">
-        <button mat-raised-button color="accent" (click)="inviteNewMember()">
-            <mat-icon inline=true>person_add</mat-icon>
-            Invite New Member
-        </button>
-    </mat-card-actions>
-    <mat-card-header>
-        <mat-card-title>
-            Team Members
-        </mat-card-title>
-    </mat-card-header>
-    <mat-nav-list>
-        <a mat-list-item [routerLink]="['/profile', member.id]" *ngFor="let member of members">
-            <img matListItemAvatar [src]="member.photoUrl" referrerpolicy="no-referrer">
-            <h3 matListItemTitle>
-                {{member.displayName}}
-            </h3>
-        </a>
-    </mat-nav-list>
-</mat-card>
-<mat-card>
-    <mat-card-actions align="end">
-        <button mat-raised-button color="accent" (click)="createNewPresentation()">
-            <mat-icon inline=true>add_circle</mat-icon>
-            Create New Presentation
-        </button>
-    </mat-card-actions>
-    <mat-card-header>
-        <mat-card-title>
-            Presentations
-        </mat-card-title>
-    </mat-card-header>
-    <mat-nav-list>
-        <a mat-list-item [routerLink]="['/new-presentation', teamId, presentation.id]"
-            *ngFor="let presentation of presentationsInProgress">
-            <mat-icon matListItemAvatar>play_circle</mat-icon>
-            <h3 matListItemTitle>
-                {{presentation.created | date:'fullDate'}}
-            </h3>
-            <p matListItemLine>
-                {{presentation.created | date:'shortTime'}}
-            </p>
-        </a>
-        <a mat-list-item [routerLink]="['/presentation', teamId, presentation.id]"
-            *ngFor="let presentation of presentationsFinished">
-            <mat-icon matListItemAvatar>done</mat-icon>
-            <h3 matListItemTitle>
-                {{presentation.percentage}}%
-            </h3>
-            <p matListItemLine>
-                {{presentation.created | date:'fullDate'}} {{presentation.created | date:'shortTime'}}
-            </p>
-        </a>
-    </mat-nav-list>
-</mat-card>
+<div class="card-container">
+    <mat-card class="card">
+        <mat-card-actions align="end">
+            <button mat-raised-button color="accent" (click)="createNewPresentation()">
+                <mat-icon inline=true>add_circle</mat-icon>
+                Create New Presentation
+            </button>
+        </mat-card-actions>
+        <mat-card-header>
+            <mat-card-title>
+                Presentations
+            </mat-card-title>
+        </mat-card-header>
+        <mat-nav-list>
+            <a mat-list-item [routerLink]="['/new-presentation', teamId, presentation.id]"
+                *ngFor="let presentation of presentationsInProgress">
+                <mat-icon matListItemAvatar>play_circle</mat-icon>
+                <h3 matListItemTitle>
+                    {{presentation.created | date:'fullDate'}}
+                </h3>
+                <p matListItemLine>
+                    {{presentation.created | date:'shortTime'}}
+                </p>
+            </a>
+            <a mat-list-item [routerLink]="['/presentation', teamId, presentation.id]"
+                *ngFor="let presentation of presentationsFinished">
+                <mat-icon matListItemAvatar>done</mat-icon>
+                <h3 matListItemTitle>
+                    {{presentation.percentage}}%
+                </h3>
+                <p matListItemLine>
+                    {{presentation.created | date:'fullDate'}} {{presentation.created | date:'shortTime'}}
+                </p>
+            </a>
+        </mat-nav-list>
+    </mat-card>
+    <mat-card class="card">
+        <mat-card-actions align="end">
+            <button mat-raised-button color="accent" (click)="inviteNewMember()">
+                <mat-icon inline=true>person_add</mat-icon>
+                Invite New Member
+            </button>
+        </mat-card-actions>
+        <mat-card-header>
+            <mat-card-title>
+                Team Members
+            </mat-card-title>
+        </mat-card-header>
+        <mat-nav-list>
+            <a mat-list-item [routerLink]="['/profile', member.id]" *ngFor="let member of members">
+                <img matListItemAvatar [src]="member.photoUrl" referrerpolicy="no-referrer">
+                <h3 matListItemTitle>
+                    {{member.displayName}}
+                </h3>
+            </a>
+        </mat-nav-list>
+    </mat-card>
+</div>
