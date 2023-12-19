@@ -69,9 +69,9 @@ export class NewPresentationComponent {
         updateDoc(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', this.presentationId),
           {
             wellbeing: responses.docs.map((response) => { return response.data()['wellbeing'] }),
-            q1: responses.docs.map((response) => { return response.data()['q1'] }),
-            q2: responses.docs.map((response) => { return response.data()['q2'] }),
-            q3: responses.docs.map((response) => { return response.data()['q3'] }),
+            responses1: responses.docs.map((response) => { return response.data()['q1'] }),
+            responses2: responses.docs.map((response) => { return response.data()['q2'] }),
+            responses3: responses.docs.map((response) => { return response.data()['q3'] }),
             finished: new Date(),
           })
           .then(() => {

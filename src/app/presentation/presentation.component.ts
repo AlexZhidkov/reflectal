@@ -9,13 +9,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { Presentation, Response } from '../models/presentation';
 import { CommonModule } from '@angular/common';
+import { NgChartsModule } from 'ng2-charts';
+import { ChartData, ChartEvent, ChartType } from 'chart.js';
+import { PresentationResult } from '../models/presentation-result';
 
 @Component({
   selector: 'app-presentation',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatCardModule, MatSnackBarModule],
+  imports: [CommonModule, RouterModule, FormsModule, NgChartsModule, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatCardModule, MatSnackBarModule],
 
   templateUrl: './presentation.component.html',
   styleUrl: './presentation.component.scss'
@@ -25,9 +27,25 @@ export class PresentationComponent {
   teamId: string;
   presentationId: string;
   presentationUrl: string;
-  presentation: Presentation = {} as Presentation;
-  numberOfResponses: number | undefined;
-  numberOfCompletedResponses: number | undefined;
+  presentation: PresentationResult = {} as PresentationResult;
+  isLoading = true;
+
+  doughnutChartType: ChartType = 'doughnut';
+  doughnutChartLabels: string[] = [
+    'Always',
+    'Often',
+    'Sometimes',
+    'Rarely',
+    'Never',
+  ];
+  doughnutChartData: ChartData<'doughnut'> = {
+    labels: this.doughnutChartLabels,
+    datasets: [
+      { data: [0, 0, 0, 0, 0] },
+      { data: [0, 0, 0, 0, 0] },
+      { data: [0, 0, 0, 0, 0] },
+    ],
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -43,41 +61,30 @@ export class PresentationComponent {
     getDoc(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', presentationId))
       .then((presentation) => {
         if (presentation.exists()) {
-          this.presentation = presentation.data() as Presentation;
+          this.presentation = presentation.data() as PresentationResult;
           this.presentation.created = presentation.data()['created'].toDate();
           this.presentation.finished = presentation.data()['finished'].toDate();
+          var dataset1 = [0, 0, 0, 0, 0];
+          this.presentation.responses1.forEach((response: number) => {
+            dataset1[5 - response]++;
+          });
+          const dataset2 = [0, 0, 0, 0, 0];
+          this.presentation.responses2.forEach((response: number) => {
+            dataset2[5 - response]++;
+          });
+          const dataset3 = [0, 0, 0, 0, 0];
+          this.presentation.responses3.forEach((response: number) => {
+            dataset3[5 - response]++;
+          });
+          this.doughnutChartData.datasets[0].label = this.presentation.question1;
+          this.doughnutChartData.datasets[0].data = dataset1;
+          this.doughnutChartData.datasets[1].label = this.presentation.question2;
+          this.doughnutChartData.datasets[1].data = dataset2;
+          this.doughnutChartData.datasets[2].label = this.presentation.question3;
+          this.doughnutChartData.datasets[2].data = dataset3;
+          this.isLoading = false;
         }
       })
-    getDocs(collection(this.firestore, 'presentations-in-progress', this.presentationId, 'responses'))
-      .then((responses) => {
-        this.numberOfResponses = responses.docs.length;
-        this.numberOfCompletedResponses = responses.docs.filter((response) => { return (response.data() as Response).completed }).length;
-      });
   }
 
-  share() {
-    if (navigator.share) {
-      navigator.share({
-        text: `Please complete reflectal checkup`,
-        url: this.presentationUrl
-      })
-    }
-  }
-
-  finish() {
-    getDocs(collection(this.firestore, 'presentations-in-progress', this.presentationId, 'responses'))
-      .then((responses) => {
-        const checkups = responses.docs.map((response) => { return response.data()['sentiment'] });
-        updateDoc(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', this.presentationId),
-          {
-            checkups: checkups,
-            completed: new Date(),
-          })
-          .then(() => {
-            deleteDoc(doc(this.firestore, 'presentations-in-progress', this.presentationId)).then(() => {
-              this.router.navigate([`/team`, this.teamId]);
-            });
-          });
-      });
-  }
 }

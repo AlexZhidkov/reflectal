@@ -7,7 +7,13 @@
     <mat-card-content>
         <p>Created: {{presentation.created | date:'medium'}}</p>
         <p>Completed: {{presentation.finished | date:'medium'}}</p>
-        <p>Responses: {{numberOfCompletedResponses}}/{{numberOfResponses}}</p>
+        <p>Controllable risk factors:</p>
+        <p>1. {{presentation.question1}}</p>
+        <p>2. {{presentation.question2}}</p>
+        <p>3. {{presentation.question3}}</p>
+        <canvas *ngIf="!isLoading" style="max-height: 500px;" baseChart class="chart" [data]="doughnutChartData"
+            [type]="doughnutChartType">
+        </canvas>
     </mat-card-content>
 
 </mat-card>

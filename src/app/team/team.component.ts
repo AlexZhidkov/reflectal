@@ -144,9 +144,9 @@ export class TeamComponent {
     const batch = writeBatch(this.firestore);
     const newPresentation = {
       created: created,
-      q1: 'It is easy to eat healthy and exercise on days I work',
-      q2: 'I am confident in my career growth and progress',
-      q3: 'I am happy in the leadership and direction',
+      question1: 'It is easy to eat healthy and exercise on days I work',
+      question2: 'I am confident in my career growth and progress',
+      question3: 'I am happy in the leadership and direction',
     };
     batch.set(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', presentationId), newPresentation);
     batch.set(doc(this.firestore, 'presentations-in-progress', presentationId), {
@@ -154,14 +154,14 @@ export class TeamComponent {
       teamId: this.teamId,
       created: created,
       questions: [
-        newPresentation.q1,
-        newPresentation.q2,
-        newPresentation.q3,
+        newPresentation.question1,
+        newPresentation.question2,
+        newPresentation.question3,
       ]
     });
     batch.commit()
       .then(() => {
-        this.router.navigate(['presentation', this.teamId, presentationId]);
+        this.router.navigate(['new-presentation', this.teamId, presentationId]);
       });
   }
 }
