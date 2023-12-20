@@ -8,11 +8,6 @@
     margin-top: 8px;
 }
 
-.center-div {
-    margin: 0 auto;
-    max-width: 500px;
-}
-
 .center-column {
     display: flex;
     flex-direction: column;
@@ -22,4 +17,26 @@
 
 mat-form-field {
     width: 100%;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.login-panel {
+    max-width: 500px;
+    flex: 1;
+    margin: 8px;
+}
+
+.info-panel {
+    flex: 1;
+    margin: 8px;
+}
+
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column;
+    }
 }
