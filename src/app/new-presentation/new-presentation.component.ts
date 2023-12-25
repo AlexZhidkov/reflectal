@@ -53,6 +53,10 @@ export class NewPresentationComponent {
     });
   }
 
+  open() {
+    window.open(this.presentationUrl, '_blank');
+  }
+
   share() {
     if (navigator.share) {
       navigator.share({
