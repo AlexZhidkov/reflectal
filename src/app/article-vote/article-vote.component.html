@@ -1,0 +1,14 @@
+<p>'Click' a card to vote for which article to view as a team</p>
+<mat-card *ngFor="let article of articles; index as i">
+    <mat-card-header>
+        <div mat-card-avatar><mat-icon>{{article.icon}}</mat-icon></div>
+        <mat-card-title>{{article.title}}</mat-card-title>
+        <mat-card-subtitle>{{article.subtitle}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-fab [color]="selectedArticle === i ? 'accent' : 'primary'" style="font-size: x-large;"
+            (click)="selectArticle(i)">{{article.votes ?? 0 }}</button>
+    </mat-card-actions>
+</mat-card>

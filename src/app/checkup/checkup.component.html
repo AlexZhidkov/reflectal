@@ -31,6 +31,8 @@
 <app-question *ngIf="questionNumber > 0 && questionNumber < 4" [question]="question"
     (nextQuestion)="NextQuestion($event)"></app-question>
 
+<app-article-vote *ngIf="articles" [articles]="articles" (vote)="selectVote($event)"></app-article-vote>
+
 <mat-card *ngIf="questionNumber >= 4">
     <mat-card-header>
         <mat-card-title>
@@ -41,6 +43,7 @@
         </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
+        <p *ngIf="!articles">Please wait for everyone to finish...</p>
         <mat-card-actions>
             <button mat-raised-button color="primary" (click)="reloadPage()">Start Over</button>
         </mat-card-actions>

@@ -66,6 +66,33 @@ export class NewPresentationComponent {
     }
   }
 
+  startVoting() {
+    updateDoc(doc(this.firestore, 'presentations-in-progress', this.presentationId), {
+      articles: [
+        {
+          icon: 'favorite',
+          title: 'Choosing the right recognition strategy for your team',
+          subtitle: 'Author Name | Date',
+        },
+        {
+          icon: 'psychology_alt',
+          title: 'What is psychological safety?',
+          subtitle: 'Author Name | Date',
+        },
+        {
+          icon: 'equalizer',
+          title: 'Alcohol and fatigue',
+          subtitle: 'Author Name | Date',
+        },
+        {
+          icon: 'favorite',
+          title: 'Inclusive language: A guide for respectful workplaces',
+          subtitle: 'Author Name | Date',
+        }
+      ]
+    })
+  }
+
   finish() {
     getDocs(collection(this.firestore, 'presentations-in-progress', this.presentationId, 'responses'))
       .then((responses) => {

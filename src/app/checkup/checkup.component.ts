@@ -8,15 +8,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatButtonToggleModule } from '@angular/material/button-toggle'
-import { Firestore, addDoc, collection, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, collectionData, doc, docData, setDoc, updateDoc } from '@angular/fire/firestore';
 import { QuestionComponent } from '../question/question.component';
-import { Presentation } from '../models/presentation';
+import { Article, Presentation } from '../models/presentation';
 import { MatButtonModule } from '@angular/material/button';
+import { ArticleVoteComponent } from '../article-vote/article-vote.component';
 
 @Component({
   selector: 'app-checkup',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, QuestionComponent, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonToggleModule, MatButtonModule, MatIconModule, MatCardModule],
+  imports: [CommonModule, RouterModule, FormsModule, QuestionComponent, ArticleVoteComponent, MatInputModule, MatFormFieldModule, MatProgressBarModule, MatButtonToggleModule, MatButtonModule, MatIconModule, MatCardModule],
   templateUrl: './checkup.component.html',
   styleUrl: './checkup.component.scss'
 })
@@ -27,18 +28,30 @@ export class CheckupComponent {
   sentiment: string | undefined;
   questionNumber: number = 0;
   question: string = '';
+  articles: Article[] | undefined;
 
   constructor(
     private route: ActivatedRoute,
   ) {
     const presentationId = this.route.snapshot.paramMap.get('presentationId');
     if (!presentationId) throw new Error("Presentation ID is falsy");
-    getDoc(doc(this.firestore, 'presentations-in-progress', presentationId)).then((presentation) => {
-      if (presentation.exists()) {
-        this.presentation = presentation.data() as Presentation;
-        this.presentation.id = presentationId;
-      }
-    })
+    docData(doc(this.firestore, 'presentations-in-progress', presentationId))
+      .subscribe((presentation) => {
+        if (presentation) {
+          this.presentation = presentation as Presentation;
+          this.presentation.id = presentationId;
+          this.articles = this.presentation.articles;
+        }
+      });
+
+    collectionData(collection(this.firestore, 'presentations-in-progress', presentationId, 'votes'))
+      .subscribe((votes) => {
+        if (this.responseId && this.articles) {
+          for (let i = 0; i < this.articles.length; i++) {
+            this.articles[i].votes = votes.filter((vote) => { return vote['articleIndex'] === i; }).length;
+          }
+        }
+      });
   }
 
   async ChangeSentiment(sentiment: string) {
@@ -53,6 +66,12 @@ export class CheckupComponent {
         wellbeing: parseInt(this.sentiment),
       })).id;
     }
+  }
+
+  selectVote(voteEvent: any) {
+    if (!this.responseId) { throw new Error("Response ID is falsy"); }
+    const vote = parseInt(voteEvent);
+    setDoc(doc(this.firestore, 'presentations-in-progress', this.presentation.id, 'votes', this.responseId), { articleIndex: vote });
   }
 
   NextQuestion(sentiment: any) {
