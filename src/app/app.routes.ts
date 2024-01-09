@@ -15,8 +15,8 @@ export const routes: Routes = [
     { path: 'profile/:userId', component: UserProfileComponent, canActivate: [CanActivateGuard] },
     { path: 'team/:teamId', component: TeamComponent, canActivate: [CanActivateGuard] },
     { path: 'invite/:teamId', component: JoinTeamComponent, canActivate: [CanActivateGuard] },
-    { path: 'new-presentation/:teamId/:presentationId', component: NewPresentationComponent },
-    { path: 'presentation/:teamId/:presentationId', component: PresentationComponent },
-    { path: 'checkup/:presentationId', component: CheckupComponent },
+    { path: 'new-presentation/:teamId/:presentationId', component: NewPresentationComponent, canActivate: [CanActivateGuard] },
+    { path: 'presentation/:teamId/:presentationId', component: PresentationComponent, canActivate: [CanActivateGuard] },
+    { path: 'checkup/:presentationId', component: CheckupComponent, canActivate: [CanActivateGuard] },
     { path: '', component: HomeComponent, canActivate: [CanActivateGuard] },
 ];

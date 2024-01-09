@@ -13,6 +13,7 @@ import { QuestionComponent } from '../question/question.component';
 import { Article, Presentation } from '../models/presentation';
 import { MatButtonModule } from '@angular/material/button';
 import { ArticleVoteComponent } from '../article-vote/article-vote.component';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-checkup',
@@ -22,9 +23,10 @@ import { ArticleVoteComponent } from '../article-vote/article-vote.component';
   styleUrl: './checkup.component.scss'
 })
 export class CheckupComponent {
+  private auth: Auth = inject(Auth);
   private firestore: Firestore = inject(Firestore);
   presentation: Presentation = {} as Presentation;
-  responseId: string | undefined;
+  userId: string | undefined;
   sentiment: string | undefined;
   questionNumber: number = 0;
   question: string = '';
@@ -35,57 +37,60 @@ export class CheckupComponent {
   ) {
     const presentationId = this.route.snapshot.paramMap.get('presentationId');
     if (!presentationId) throw new Error("Presentation ID is falsy");
-    docData(doc(this.firestore, 'presentations-in-progress', presentationId))
-      .subscribe((presentation) => {
-        if (presentation) {
-          this.presentation = presentation as Presentation;
-          this.presentation.id = presentationId;
-          this.articles = this.presentation.articles;
-        }
-      });
+    onAuthStateChanged(this.auth, async (user) => {
+      if (!user) {
+        console.error('User object is falsy');
+        return;
+      }
+      this.userId = user.uid;
 
-    collectionData(collection(this.firestore, 'presentations-in-progress', presentationId, 'votes'))
-      .subscribe((votes) => {
-        if (this.responseId && this.articles) {
-          for (let i = 0; i < this.articles.length; i++) {
-            this.articles[i].votes = votes.filter((vote) => { return vote['articleIndex'] === i; }).length;
+      docData(doc(this.firestore, 'presentations-in-progress', presentationId))
+        .subscribe((presentation) => {
+          if (presentation) {
+            this.presentation = presentation as Presentation;
+            this.presentation.id = presentationId;
+            this.articles = this.presentation.articles;
           }
-        }
-      });
+        });
+
+      collectionData(collection(this.firestore, 'presentations-in-progress', presentationId, 'votes'))
+        .subscribe((votes) => {
+          if (this.articles) {
+            for (let i = 0; i < this.articles.length; i++) {
+              this.articles[i].votes = votes.filter((vote) => { return vote['articleIndex'] === i; }).length;
+            }
+          }
+        });
+    });
   }
 
   async ChangeSentiment(sentiment: string) {
+    if (!this.userId) { throw new Error("User ID is falsy"); }
     this.sentiment = sentiment;
-    if (this.responseId) {
-      updateDoc(doc(this.firestore, 'presentations-in-progress', this.presentation.id, 'responses', this.responseId),
-        { wellbeing: parseInt(this.sentiment) });
-    } else {
-      const responsesRef = collection(this.firestore, 'presentations-in-progress', this.presentation.id, 'responses');
-      this.responseId = (await addDoc(responsesRef, {
-        started: new Date(),
-        wellbeing: parseInt(this.sentiment),
-      })).id;
-    }
+    setDoc(doc(this.firestore, 'presentations-in-progress', this.presentation.id, 'responses', this.userId), {
+      started: new Date(),
+      wellbeing: parseInt(this.sentiment),
+    });
   }
 
   selectVote(voteEvent: any) {
-    if (!this.responseId) { throw new Error("Response ID is falsy"); }
+    if (!this.userId) { throw new Error("User ID is falsy"); }
     const vote = parseInt(voteEvent);
-    setDoc(doc(this.firestore, 'presentations-in-progress', this.presentation.id, 'votes', this.responseId), { articleIndex: vote });
+    setDoc(doc(this.firestore, 'presentations-in-progress', this.presentation.id, 'votes', this.userId), { articleIndex: vote });
   }
 
   NextQuestion(sentiment: any) {
-    if (!this.responseId) { throw new Error("Response ID is falsy"); }
+    if (!this.userId) { throw new Error("User ID is falsy"); }
 
     this.question = this.presentation.questions[this.questionNumber];
     if (this.questionNumber > 0) {
       var responseData: { [key: string]: number } = {};
       responseData[`q${this.questionNumber}`] = parseInt(sentiment);
-      updateDoc(doc(this.firestore, 'presentations-in-progress', this.presentation.id, 'responses', this.responseId), responseData);
+      updateDoc(doc(this.firestore, 'presentations-in-progress', this.presentation.id, 'responses', this.userId), responseData);
     }
     this.questionNumber++;
     if (this.questionNumber >= 4) {
-      updateDoc(doc(this.firestore, 'presentations-in-progress', this.presentation.id, 'responses', this.responseId),
+      updateDoc(doc(this.firestore, 'presentations-in-progress', this.presentation.id, 'responses', this.userId),
         { completed: new Date() });
     }
   }
