@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, User, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, updateProfile } from '@angular/fire/auth';
+import { Auth, AuthProvider, FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, User, createUserWithEmailAndPassword, sendPasswordResetEmail, signInAnonymously, signInWithEmailAndPassword, signInWithPopup, updateProfile } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -64,6 +64,17 @@ export class LoginComponent {
     });
   }
 
+  continueAnonymously() {
+    signInAnonymously(this.auth).then((userCredential) => {
+      const user = userCredential.user;
+      this.onSuccess(user);
+    }).catch((error) => {
+      console.log(error);
+      //ToDo: Show error message in toast
+      console.log(error.message);
+    });
+  }
+
   signUpWithPassword() {
     createUserWithEmailAndPassword(this.auth, this.email, this.password).then((userCredential) => {
       const user = userCredential.user;
@@ -105,7 +116,7 @@ export class LoginComponent {
 
   onSuccess(user: User): void {
     setUserId(this.analytics, user.uid);
-    logEvent(this.analytics, 'login', { uid: user.uid, providerId: user.providerData[0].providerId })
+    logEvent(this.analytics, 'login', { uid: user.uid, providerId: user.providerData[0]?.providerId })
     const dbUserRef = doc(this.firestore, 'users', user.uid);
     getDoc(dbUserRef).then(async (doc) => {
       if (doc.exists()) {

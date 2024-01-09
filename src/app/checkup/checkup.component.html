@@ -1,51 +1,54 @@
-<mat-card *ngIf="questionNumber === 0">
-    <mat-card-header>
-        <mat-card-title>
-            How are you feeling today?
-        </mat-card-title>
-        <mat-card-subtitle>
-            Wellbeing Checkup
-        </mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-        <mat-button-toggle-group [ngModel]="sentiment" aria-label="sentiment" (ngModelChange)="ChangeSentiment($event)">
-            <mat-button-toggle value="1">
-                <mat-icon class="big-icon">sentiment_very_dissatisfied</mat-icon>
-            </mat-button-toggle>
-            <mat-button-toggle value="2">
-                <mat-icon class="big-icon">sentiment_dissatisfied</mat-icon>
-            </mat-button-toggle>
-            <mat-button-toggle value="3">
-                <mat-icon class="big-icon">sentiment_satisfied</mat-icon>
-            </mat-button-toggle>
-            <mat-button-toggle value="4">
-                <mat-icon class="big-icon">sentiment_very_satisfied</mat-icon>
-            </mat-button-toggle>
-        </mat-button-toggle-group>
-        <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="NextQuestion(sentiment)">Next Question</button>
-        </mat-card-actions>
-    </mat-card-content>
-</mat-card>
+<div *ngIf="!articles">
+    <mat-card *ngIf="questionNumber === 0">
+        <mat-card-header>
+            <mat-card-title>
+                How are you feeling today?
+            </mat-card-title>
+            <mat-card-subtitle>
+                Wellbeing Checkup
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <mat-button-toggle-group [ngModel]="sentiment" aria-label="sentiment"
+                (ngModelChange)="ChangeSentiment($event)">
+                <mat-button-toggle value="1">
+                    <mat-icon class="big-icon">sentiment_very_dissatisfied</mat-icon>
+                </mat-button-toggle>
+                <mat-button-toggle value="2">
+                    <mat-icon class="big-icon">sentiment_dissatisfied</mat-icon>
+                </mat-button-toggle>
+                <mat-button-toggle value="3">
+                    <mat-icon class="big-icon">sentiment_satisfied</mat-icon>
+                </mat-button-toggle>
+                <mat-button-toggle value="4">
+                    <mat-icon class="big-icon">sentiment_very_satisfied</mat-icon>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+            <mat-card-actions>
+                <button mat-raised-button color="primary" (click)="NextQuestion(sentiment)">Next Question</button>
+            </mat-card-actions>
+        </mat-card-content>
+    </mat-card>
 
-<app-question *ngIf="questionNumber > 0 && questionNumber < 4" [question]="question"
-    (nextQuestion)="NextQuestion($event)"></app-question>
+    <app-question *ngIf="questionNumber > 0 && questionNumber < 4" [question]="question"
+        (nextQuestion)="NextQuestion($event)"></app-question>
+
+    <mat-card *ngIf="questionNumber >= 4">
+        <mat-card-header>
+            <mat-card-title>
+                Finished
+            </mat-card-title>
+            <mat-card-subtitle>
+                Thank you
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <p *ngIf="!articles">Please wait for everyone to finish...</p>
+            <mat-card-actions>
+                <button mat-raised-button color="primary" (click)="reloadPage()">Start Over</button>
+            </mat-card-actions>
+        </mat-card-content>
+    </mat-card>
+</div>
 
 <app-article-vote *ngIf="articles" [articles]="articles" (vote)="selectVote($event)"></app-article-vote>
-
-<mat-card *ngIf="questionNumber >= 4">
-    <mat-card-header>
-        <mat-card-title>
-            Finished
-        </mat-card-title>
-        <mat-card-subtitle>
-            Thank you
-        </mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-        <p *ngIf="!articles">Please wait for everyone to finish...</p>
-        <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="reloadPage()">Start Over</button>
-        </mat-card-actions>
-    </mat-card-content>
-</mat-card>

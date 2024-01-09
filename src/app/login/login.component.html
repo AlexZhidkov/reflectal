@@ -15,6 +15,10 @@
                     <mat-icon svgIcon="microsoft" inline=true></mat-icon>
                     Continue with Microsoft
                 </button>
+                <button mat-raised-button class="login-button" (click)="continueAnonymously()">
+                    <mat-icon inline=true>person_off</mat-icon>
+                    Continue Anonymously
+                </button>
             </mat-card-content>
             <mat-card-content *ngIf="isSignUp">
                 <button mat-raised-button class="login-button" (click)="isNewEmailAccount = true">

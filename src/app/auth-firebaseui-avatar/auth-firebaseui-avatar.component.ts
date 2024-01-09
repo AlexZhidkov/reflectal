@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
+import { Router } from "@angular/router";
 
 export interface LinkMenuItem {
   text: string;
@@ -53,6 +54,10 @@ export class AuthFirebaseuiAvatarComponent implements OnInit {
   user: User | null = null;
   displayNameInitials: string | null = null;
 
+  constructor(
+    private router: Router,
+  ) { }
+
   ngOnInit() {
     onAuthStateChanged(this.auth, (user) => {
       if (!user) {
@@ -77,6 +82,10 @@ export class AuthFirebaseuiAvatarComponent implements OnInit {
       (initialsRegExp.shift() || "") + (initialsRegExp.pop() || "")
     ).toUpperCase();
     return initials;
+  }
+
+  convertAnonymousToPermanentAccount() {
+    this.router.navigate([`/login`]);
   }
 
   async signOut() {

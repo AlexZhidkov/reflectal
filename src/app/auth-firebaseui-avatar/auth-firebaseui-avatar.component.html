@@ -2,6 +2,7 @@
 <button *ngIf="user" class="ngx-auth-firebaseui-avatar-button" [matMenuTriggerFor]="posXMenu"
   [matTooltip]="user.displayName ? user.displayName : ''" [style.background-image]="'url(' + user.photoURL + ')'"
   aria-label="Open x-positioned menu" mat-mini-fab style="background-size: cover">
+  <mat-icon *ngIf="user?.isAnonymous">person_off</mat-icon>
   <span *ngIf="!user?.photoURL">{{displayNameInitials || ''}}</span>
 </button>
 
@@ -10,6 +11,7 @@
     [ngStyle]="{ 'padding-top.px': layout === 'default' ? 0 : 10 }">
     <button [style.background-image]="user?.photoURL ? 'url(' + user?.photoURL + ')' : ''" mat-fab
       style="background-size: cover" *ngIf="layout === 'default'">
+      <mat-icon *ngIf="user?.isAnonymous">person_off</mat-icon>
       <span *ngIf="!user?.photoURL">{{displayNameInitials || ''}}</span>
     </button>
     <div style="display: grid; padding-left: 10px; padding-right: 10px">
@@ -19,10 +21,15 @@
   </div>
 
   <div [ngStyle]="{ 'padding-bottom.px': layout === 'default' ? 0 : 10 } ">
+    <button (click)="convertAnonymousToPermanentAccount()" *ngIf="user?.isAnonymous" mat-menu-item>
+      <mat-icon>badge</mat-icon>
+      Create Account
+    </button>
     <div *ngFor="let menuItem of links" class="links-menu">
       <button (click)="menuItem?.callback()" mat-menu-item>
         <mat-icon>{{menuItem?.icon}}</mat-icon>
-        {{menuItem?.text}}</button>
+        {{menuItem?.text}}
+      </button>
     </div>
     <button *ngIf="canViewAccount" (click)="openProfile()" color="primary" mat-raised-button>
       {{ textProfile }}
