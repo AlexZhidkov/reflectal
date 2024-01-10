@@ -11,7 +11,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgChartsModule } from 'ng2-charts';
-import { ChartData, ChartEvent, ChartType } from 'chart.js';
+import { ChartData, ChartType } from 'chart.js';
 import { PresentationResult } from '../models/presentation-result';
 
 @Component({
@@ -24,6 +24,7 @@ import { PresentationResult } from '../models/presentation-result';
 })
 export class PresentationComponent {
   private firestore: Firestore = inject(Firestore);
+  orgId: string;
   teamId: string;
   presentationId: string;
   presentationUrl: string;
@@ -59,14 +60,18 @@ export class PresentationComponent {
     private route: ActivatedRoute,
     private router: Router,
   ) {
+    const orgId = this.route.snapshot.paramMap.get('orgId');
+    if (!orgId) throw new Error("Org ID is falsy");
+    this.orgId = orgId;
     const teamId = this.route.snapshot.paramMap.get('teamId');
     if (!teamId) throw new Error("Team ID is falsy");
     this.teamId = teamId;
     const presentationId = this.route.snapshot.paramMap.get('presentationId');
     if (!presentationId) throw new Error("Presentation ID is falsy");
     this.presentationId = presentationId;
+
     this.presentationUrl = `${window.location.origin}/checkup/${this.presentationId}`;
-    getDoc(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', presentationId))
+    getDoc(doc(this.firestore, 'orgs', this.orgId, 'teams', this.teamId, 'presentations', presentationId))
       .then((presentation) => {
         if (presentation.exists()) {
           this.presentation = presentation.data() as PresentationResult;

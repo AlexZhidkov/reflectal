@@ -22,6 +22,7 @@ import { CommonModule } from '@angular/common';
 })
 export class NewPresentationComponent {
   private firestore: Firestore = inject(Firestore);
+  orgId: string;
   teamId: string;
   presentationId: string;
   presentationUrl: string;
@@ -33,14 +34,18 @@ export class NewPresentationComponent {
     private route: ActivatedRoute,
     private router: Router,
   ) {
+    const orgId = this.route.snapshot.paramMap.get('orgId');
+    if (!orgId) throw new Error("Org ID is falsy");
+    this.orgId = orgId;
     const teamId = this.route.snapshot.paramMap.get('teamId');
     if (!teamId) throw new Error("Team ID is falsy");
     this.teamId = teamId;
+
     const presentationId = this.route.snapshot.paramMap.get('presentationId');
     if (!presentationId) throw new Error("Presentation ID is falsy");
     this.presentationId = presentationId;
     this.presentationUrl = `${window.location.origin}/checkup/${this.presentationId}`;
-    getDoc(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', presentationId))
+    getDoc(doc(this.firestore, 'orgs', this.orgId, 'teams', this.teamId, 'presentations', presentationId))
       .then((presentation) => {
         if (presentation.exists()) {
           this.presentation = presentation.data() as Presentation;
@@ -97,7 +102,7 @@ export class NewPresentationComponent {
     getDocs(collection(this.firestore, 'presentations-in-progress', this.presentationId, 'responses'))
       .then((responses) => {
         const checkups = responses.docs.map((response) => { return response.data()['wellbeing'] });
-        updateDoc(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', this.presentationId),
+        updateDoc(doc(this.firestore, 'orgs', this.orgId, 'teams', this.teamId, 'presentations', this.presentationId),
           {
             wellbeing: responses.docs.map((response) => { return response.data()['wellbeing'] }),
             responses1: responses.docs.map((response) => { return response.data()['q1'] }),
@@ -107,7 +112,7 @@ export class NewPresentationComponent {
           })
           .then(() => {
             deleteDoc(doc(this.firestore, 'presentations-in-progress', this.presentationId)).then(() => {
-              this.router.navigate([`/team`, this.teamId]);
+              this.router.navigate([`/team`, this.orgId, this.teamId]);
             });
           });
       });

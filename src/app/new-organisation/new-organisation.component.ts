@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
+import { AppUser } from '../models/app-user';
 
 @Component({
   selector: 'app-new-organisation',
@@ -35,14 +36,15 @@ export class NewOrganisationComponent {
       description: this.description,
       owner: this.auth.currentUser.uid
     }).then(async (org) => {
-      const user = (await getDoc(doc(this.firestore, 'users', this.auth.currentUser!.uid))).data();
+      const user = (await getDoc(doc(this.firestore, 'users', this.auth.currentUser!.uid))).data() as AppUser;
       if (!user) throw new Error("User object is falsy.");
-      user['orgs'].push(org.id);
+      user.orgs.push(org.id);
       updateDoc(doc(this.firestore, 'users', this.auth.currentUser!.uid), {
         org: org.id,
-        orgs: user['orgs']
+        orgs: user.orgs
+      }).then(() => {
+        this.router.navigate(['/']);
       });
-      this.router.navigate(['/']);
     });
   }
 }

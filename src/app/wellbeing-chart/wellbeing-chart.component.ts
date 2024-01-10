@@ -12,6 +12,7 @@ import { NgChartsModule } from 'ng2-charts';
   styleUrl: './wellbeing-chart.component.scss'
 })
 export class WellbeingChartComponent implements OnChanges {
+  @Input({ required: true }) orgId!: string;
   @Input({ required: true }) teamId!: string;
   private firestore: Firestore = inject(Firestore);
   lineChartType: ChartType = 'line';
@@ -29,7 +30,7 @@ export class WellbeingChartComponent implements OnChanges {
   isLoading = true;
 
   ngOnChanges(): void {
-    const q = query(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations'),
+    const q = query(collection(this.firestore, 'orgs', this.orgId, 'teams', this.teamId, 'presentations'),
       orderBy('created', 'asc'));
     getDocs(q)
       .then((presentations) => {

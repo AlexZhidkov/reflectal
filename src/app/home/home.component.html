@@ -13,12 +13,12 @@
     </mat-card-actions>
     <mat-card-header>
         <mat-card-title>
-            My Teams
+            {{orgName}}
         </mat-card-title>
     </mat-card-header>
 
     <mat-nav-list>
-        <a mat-list-item [routerLink]="['/team/'+team.id]" *ngFor="let team of teams">
+        <a mat-list-item [routerLink]="['/team', this.user?.org, team.id]" *ngFor="let team of teams">
             <img matListItemAvatar [src]="team.icon" referrerpolicy="no-referrer" [alt]="team.title">
             <h3 matListItemTitle>
                 {{team.title ? team.title : "New Team"}}

@@ -22,6 +22,7 @@ export class JoinTeamComponent {
   private firestore: Firestore = inject(Firestore);
   private analytics: Analytics = inject(Analytics);
   teamRef: DocumentReference<DocumentData>;
+  orgId: string;
   teamId: string;
   team: Team | undefined;
   user: AppUser | null = null;
@@ -32,12 +33,14 @@ export class JoinTeamComponent {
     private router: Router,
     private snackBar: MatSnackBar,
   ) {
+    const orgId = this.route.snapshot.paramMap.get('orgId');
+    if (!orgId) throw new Error("Org ID is falsy");
+    this.orgId = orgId;
     const teamId = this.route.snapshot.paramMap.get('teamId');
-    if (!teamId) {
-      throw new Error("Team ID is falsy");
-    }
+    if (!teamId) throw new Error("Team ID is falsy");
     this.teamId = teamId;
-    this.teamRef = doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId as string);
+
+    this.teamRef = doc(this.firestore, 'orgs', this.orgId, 'teams', this.teamId);
     onAuthStateChanged(this.auth, async (user) => {
       if (!user) {
         console.error('User object is falsy');
@@ -62,14 +65,16 @@ export class JoinTeamComponent {
     if (!this.team) throw new Error('Team object is falsy');
 
     const batch = writeBatch(this.firestore);
-    batch.set(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'members', this.user.uid), {
+    batch.set(doc(this.firestore, 'orgs', this.orgId, 'teams', this.teamId, 'members', this.user.uid), {
       displayName: this.user.displayName,
       photoURL: this.user.photoURL
     });
+    /* ToDo: Need to decide if we need to keep a collection of teams on user profile
     batch.set(doc(this.firestore, 'users', this.user.uid, 'teams', this.teamId), {
       title: this.team.title,
       photoURL: this.user.photoURL
     });
+    */
     batch.commit().then(() => {
       logEvent(this.analytics, 'join_team', {
         teamId: this.teamId,

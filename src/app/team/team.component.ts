@@ -34,6 +34,7 @@ export class TeamComponent {
   newTeamTitle = `New Team`;
   teamTitle: string = this.newTeamTitle;
   isLoading = true;
+  orgId: string;
   teamId: string;
   user: AppUser | null = null;
   members: any[] = [];
@@ -46,12 +47,14 @@ export class TeamComponent {
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
   ) {
+    const orgId = this.route.snapshot.paramMap.get('orgId');
+    if (!orgId) throw new Error("Org ID is falsy");
+    this.orgId = orgId;
     const teamId = this.route.snapshot.paramMap.get('teamId');
-    if (!teamId) {
-      throw new Error("Team ID is falsy");
-    }
+    if (!teamId) throw new Error("Team ID is falsy");
     this.teamId = teamId;
-    this.teamRef = doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId as string);
+
+    this.teamRef = doc(this.firestore, 'orgs', this.orgId, 'teams', this.teamId);
     onAuthStateChanged(this.auth, async (user) => {
       if (!user) {
         console.error('User object is falsy');
@@ -75,7 +78,7 @@ export class TeamComponent {
       this.isLoading = false;
     });
 
-    collectionData(query(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'members'),
+    collectionData(query(collection(this.firestore, 'orgs', this.orgId, 'teams', this.teamId, 'members'),
       orderBy('displayName', 'asc')), { idField: 'id' })
       .pipe().subscribe((members) => {
         this.members = [];
@@ -88,7 +91,7 @@ export class TeamComponent {
         });
       });
 
-    collectionData(query(collection(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations'),
+    collectionData(query(collection(this.firestore, 'orgs', this.orgId, 'teams', this.teamId, 'presentations'),
       orderBy('created', 'desc')), { idField: 'id' })
       .pipe().subscribe((presentations) => {
         this.presentationsFinished = [];
@@ -113,19 +116,12 @@ export class TeamComponent {
       });
   }
 
-  updateTeamTitle(teamTitle: string) {
-    const batch = writeBatch(this.firestore);
-    batch.update(this.teamRef as DocumentReference<DocumentData>, { title: teamTitle });
-    batch.update(doc(this.firestore, 'users', this.user?.uid as string, 'teams', this.teamId as string), { title: teamTitle });
-    batch.commit();
-  }
-
   updateTeam(data: any) {
     updateDoc(this.teamRef as DocumentReference<DocumentData>, data)
   }
 
   inviteNewMember() {
-    var inviteUrl = `${window.location.origin}/invite/${this.teamId}`;
+    var inviteUrl = `${window.location.origin}/invite/${this.orgId}/${this.teamId}`;
     const invite = `Join ${this.team?.title} on reflectal`;
     this.clipboard.copy(`${invite}\n${inviteUrl}`);
 
@@ -151,9 +147,9 @@ export class TeamComponent {
       question2: 'I am confident in my career growth and progress',
       question3: 'I am happy in the leadership and direction',
     };
-    batch.set(doc(this.firestore, 'orgs', 'DEMO', 'teams', this.teamId, 'presentations', presentationId), newPresentation);
+    batch.set(doc(this.firestore, 'orgs', this.orgId, 'teams', this.teamId, 'presentations', presentationId), newPresentation);
     batch.set(doc(this.firestore, 'presentations-in-progress', presentationId), {
-      orgId: 'DEMO',
+      orgId: this.orgId,
       teamId: this.teamId,
       created: created,
       questions: [

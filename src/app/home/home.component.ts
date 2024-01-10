@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Analytics, logEvent } from '@angular/fire/analytics';
-import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
-import { CollectionReference, Firestore, collection, collectionData, doc, writeBatch } from '@angular/fire/firestore';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { CollectionReference, Firestore, addDoc, collection, collectionData, doc, getDoc, query, where } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Team } from '../models/team';
+import { AppUser } from '../models/app-user';
 
 @Component({
   standalone: true,
@@ -28,7 +29,8 @@ export class HomeComponent {
   isLoading = true;
   private auth: Auth = inject(Auth);
   geoLocationError = false;
-  user: User | null = null;
+  user: AppUser | null = null;
+  orgName: string = '';
   today = new Date();
 
   constructor(
@@ -36,14 +38,17 @@ export class HomeComponent {
     private snackBar: MatSnackBar,
   ) {
 
-    onAuthStateChanged(this.auth, (user) => {
-      if (!user) {
+    onAuthStateChanged(this.auth, async (currentUser) => {
+      if (!currentUser) {
         this.isLoading = false;
         return;
       }
-      this.user = user;
-      this.teamsCollection = collection(this.firestore, 'users', user?.uid, 'teams');
-      collectionData(this.teamsCollection, { idField: 'id' }).subscribe((teams) => {
+      this.user = (await getDoc(doc(this.firestore, 'users', currentUser.uid))).data() as AppUser;
+      getDoc(doc(this.firestore, 'orgs', this.user.org)).then((org) => {
+        this.orgName = org.data()?.['name'];
+      });
+      this.teamsCollection = collection(this.firestore, 'orgs', this.user.org, 'teams');
+      collectionData(query(this.teamsCollection, where('owner', '==', currentUser.uid)), { idField: 'id' }).subscribe((teams) => {
         this.teams = teams;
         this.isLoading = false;
       });
@@ -57,9 +62,8 @@ export class HomeComponent {
       this.router.navigate([`login`]);
       return;
     }
-    const teamId = doc(collection(this.firestore, 'orgs', 'DEMO', 'teams')).id;
+    const teamId = doc(collection(this.firestore, 'orgs', this.user.org, 'teams')).id;
     logEvent(this.analytics, 'new_team', { uid: this.user.uid, teamId: teamId })
-    const batch = writeBatch(this.firestore);
     const newTeam: Team = {
       owner: this.user.uid,
       dateTime: new Date(),
@@ -68,12 +72,7 @@ export class HomeComponent {
       description: '',
     }
 
-    batch.set(doc(collection(this.firestore, 'orgs', 'DEMO', 'teams'), teamId), newTeam);
-    batch.set(doc(collection(this.firestore, 'users', this.user.uid, 'teams'), teamId), {
-      dateTime: newTeam.dateTime,
-      icon: this.user.photoURL,
-    });
-    batch.commit().then(() => {
+    addDoc(collection(this.firestore, 'orgs', this.user.org, 'teams'), newTeam).then(() => {
       this.router.navigate([`team/${teamId}`]);
     });
   }
