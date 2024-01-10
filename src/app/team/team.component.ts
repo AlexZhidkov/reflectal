@@ -160,7 +160,7 @@ export class TeamComponent {
     });
     batch.commit()
       .then(() => {
-        this.router.navigate(['new-presentation', this.teamId, presentationId]);
+        this.router.navigate(['new-presentation', this.orgId, this.teamId, presentationId]);
       });
   }
 }
