@@ -16,9 +16,13 @@
         </button>
     </mat-card-actions>
     <mat-card-header>
-        <mat-card-title>
-            {{orgName}}
-        </mat-card-title>
+        <mat-card-title-group>
+            <mat-card-title> {{orgName}} </mat-card-title>
+            <button mat-raised-button [matMenuTriggerFor]="orgSelector" data-cy="inviteToOrgBtn">
+                <mat-icon>autorenew</mat-icon>
+                Switch
+            </button>
+        </mat-card-title-group>
     </mat-card-header>
 
     <mat-nav-list>
@@ -34,3 +38,7 @@
         </a>
     </mat-nav-list>
 </mat-card>
+
+<mat-menu #orgSelector="matMenu">
+    <button mat-menu-item *ngFor="let org of orgNames" (click)="switchOrg(org.id)">{{org.name}}</button>
+</mat-menu>

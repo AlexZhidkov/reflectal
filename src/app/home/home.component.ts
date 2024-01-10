@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Analytics, logEvent } from '@angular/fire/analytics';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { CollectionReference, Firestore, addDoc, collection, collectionData, doc, getDoc, query, where } from '@angular/fire/firestore';
+import { CollectionReference, Firestore, addDoc, collection, collectionData, doc, getDoc, query, updateDoc, where } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -12,12 +12,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatMenuModule } from '@angular/material/menu';
 import { Team } from '../models/team';
 import { AppUser } from '../models/app-user';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatCardModule, MatListModule, MatSnackBarModule],
+  imports: [CommonModule, RouterModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatMenuModule, MatCardModule, MatListModule, MatSnackBarModule],
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
@@ -32,6 +33,7 @@ export class HomeComponent {
   geoLocationError = false;
   user: AppUser | null = null;
   orgName: string = '';
+  orgNames: { id: string, name: string }[] = [];
   today = new Date();
 
   constructor(
@@ -46,8 +48,14 @@ export class HomeComponent {
         return;
       }
       this.user = (await getDoc(doc(this.firestore, 'users', currentUser.uid))).data() as AppUser;
-      getDoc(doc(this.firestore, 'orgs', this.user.org)).then((org) => {
-        this.orgName = org.data()?.['name'];
+      getDoc(doc(this.firestore, 'orgs', this.user.org)).then((currentOrg) => {
+        this.orgName = currentOrg.data()?.['name'];
+
+        this.user?.orgs?.forEach((org) => {
+          getDoc(doc(this.firestore, 'orgs', org)).then((org) => {
+            this.orgNames.push({ id: org.id, name: org.data()?.['name'] });
+          });
+        });
       });
       this.teamsCollection = collection(this.firestore, 'orgs', this.user.org, 'teams');
       collectionData(query(this.teamsCollection, where('owner', '==', currentUser.uid)), { idField: 'id' }).subscribe((teams) => {
@@ -76,6 +84,13 @@ export class HomeComponent {
 
     addDoc(collection(this.firestore, 'orgs', this.user.org, 'teams'), newTeam).then(() => {
       this.router.navigate([`team/${teamId}`]);
+    });
+  }
+
+  switchOrg(orgId: string) {
+    if (!this.user) throw new Error('User object is falsy');
+    updateDoc(doc(this.firestore, 'users', this.user.uid), { org: orgId }).then(() => {
+      window.location.reload();
     });
   }
 
