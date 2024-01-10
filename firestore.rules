@@ -5,11 +5,11 @@ service cloud.firestore {
   	match /users/{uid}/{document=**} {
       allow read, write: if request.auth.uid == uid;
 		}
-  	match /orgs/DEMO/{document=**} {
+  	match /orgs/{document=**} {
       allow read, write: if request.auth.uid != null;
 		}
      	match /presentations-in-progress/{document=**} {
-      allow read, write: if true;
+      allow read, write: if request.auth.uid != null;
 		} 
   }
 }

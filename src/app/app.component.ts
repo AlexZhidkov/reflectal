@@ -25,6 +25,7 @@ export class AppComponent {
 
   avatarLinks: LinkMenuItem[] = [
     { icon: 'account_circle', text: `Profile`, callback: () => { this.router.navigate(['profile']); } },
+    { icon: 'source_environment', text: `Create Organisation`, callback: () => { this.router.navigate(['org']); } },
     { icon: 'info', text: `About the app`, callback: () => { this.router.navigate(['about']); } },
     {
       icon: 'mail', text: `Contact the developer`, callback: () => {

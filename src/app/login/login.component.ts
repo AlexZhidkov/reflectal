@@ -129,7 +129,9 @@ export class LoginComponent {
           uid: user.uid,
           displayName: user.displayName ?? this.name,
           email: user.email ?? this.email,
-          photoURL: user.photoURL
+          photoURL: user.photoURL,
+          org: 'DEMO',
+          orgs: ['DEMO'],
         });
       }
       this.route.queryParams.subscribe(params => {
