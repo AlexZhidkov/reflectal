@@ -5,6 +5,7 @@ import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { CollectionReference, Firestore, addDoc, collection, collectionData, doc, getDoc, query, where } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
@@ -35,6 +36,7 @@ export class HomeComponent {
 
   constructor(
     private router: Router,
+    private clipboard: Clipboard,
     private snackBar: MatSnackBar,
   ) {
 
@@ -77,4 +79,18 @@ export class HomeComponent {
     });
   }
 
+  inviteToOrg() {
+    if (!this.user) throw new Error('User object is falsy');
+
+    var inviteUrl = `${window.location.origin}/invite/${this.user.org}`;
+    const invite = `Join ${this.orgName} on reflectal`;
+    this.clipboard.copy(`${invite}\n${inviteUrl}`);
+
+    if (navigator.share) {
+      navigator.share({
+        text: invite,
+        url: inviteUrl
+      })
+    }
+  }
 }

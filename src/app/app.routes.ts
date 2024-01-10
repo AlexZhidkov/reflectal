@@ -9,6 +9,7 @@ import { JoinTeamComponent } from './join-team/join-team.component';
 import { PresentationComponent } from './presentation/presentation.component';
 import { NewPresentationComponent } from './new-presentation/new-presentation.component';
 import { NewOrganisationComponent } from './new-organisation/new-organisation.component';
+import { JoinOrgComponent } from './join-org/join-org.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -16,6 +17,7 @@ export const routes: Routes = [
     { path: 'org', component: NewOrganisationComponent, canActivate: [CanActivateGuard] },
     { path: 'profile/:userId', component: UserProfileComponent, canActivate: [CanActivateGuard] },
     { path: 'team/:orgId/:teamId', component: TeamComponent, canActivate: [CanActivateGuard] },
+    { path: 'invite/:orgId', component: JoinOrgComponent, canActivate: [CanActivateGuard] },
     { path: 'invite/:orgId/:teamId', component: JoinTeamComponent, canActivate: [CanActivateGuard] },
     { path: 'new-presentation/:orgId/:teamId/:presentationId', component: NewPresentationComponent, canActivate: [CanActivateGuard] },
     { path: 'presentation/:orgId/:teamId/:presentationId', component: PresentationComponent, canActivate: [CanActivateGuard] },
