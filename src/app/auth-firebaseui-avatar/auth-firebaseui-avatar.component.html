@@ -15,7 +15,7 @@
       <span *ngIf="!user?.photoURL">{{displayNameInitials || ''}}</span>
     </button>
     <div style="display: grid; padding-left: 10px; padding-right: 10px">
-      <strong mat-card-title>{{user?.displayName}}</strong>
+      <strong mat-card-title>{{user?.isAnonymous ? "Anonymous" : user?.displayName}}</strong>
       <em mat-card-subtitle style="font-style: italic">{{user?.email}}</em>
     </div>
   </div>
