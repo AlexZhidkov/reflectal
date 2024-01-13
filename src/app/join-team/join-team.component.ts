@@ -80,7 +80,7 @@ export class JoinTeamComponent {
         teamId: this.teamId,
         uid: this.auth.currentUser?.uid,
       });
-      this.router.navigate(['/team', this.teamId]);
+      this.router.navigate(['/team', this.orgId, this.teamId]);
     });
   }
 }
