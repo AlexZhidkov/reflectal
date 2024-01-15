@@ -100,4 +100,34 @@ export class PresentationComponent {
       })
   }
 
+  downloadCSV() {
+    const data = this.createCSV();
+    const blob = new Blob([data], { type: 'text/csv' });
+
+    // Creating an object for downloading url 
+    const url = window.URL.createObjectURL(blob)
+
+    // Creating an anchor(a) tag of HTML 
+    const a = document.createElement('a')
+
+    // Passing the blob downloading url  
+    a.setAttribute('href', url)
+
+    // Setting the anchor tag attribute for downloading 
+    // and passing the download file name 
+    a.setAttribute('download', 'download.csv');
+
+    // Performing a download with click 
+    a.click()
+  }
+
+  createCSV(): string {
+    const csvRows = [];
+    const headers = Object.keys(this.presentation);
+    csvRows.push(headers.join(','));
+    const values = Object.values(this.presentation).join(',');
+    csvRows.push(values)
+
+    return csvRows.join('\n')
+  }
 }

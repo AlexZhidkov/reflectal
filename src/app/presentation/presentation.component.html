@@ -1,9 +1,13 @@
 <div *ngIf="!isLoading">
     <mat-card>
         <mat-card-header>
-            <mat-card-title>
-                Presentation
-            </mat-card-title>
+            <mat-card-title-group>
+                <mat-card-title>Presentation</mat-card-title>
+                <button mat-raised-button (click)="downloadCSV()" data-cy="DownloadCsvBtn">
+                    <mat-icon>download</mat-icon>
+                    Download CSV
+                </button>
+            </mat-card-title-group>
         </mat-card-header>
         <mat-card-content *ngIf="!isLoading">
             <p>Created: {{presentation.created | date:'medium'}}</p>
